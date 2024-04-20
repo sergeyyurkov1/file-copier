@@ -1,0 +1,57 @@
+# This workflow will install Python dependencies, run tests and lint with a single version of Python
+# For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-python
+
+name: Python application
+
+on:
+  push:
+    # branches: ["main"]
+    tags:
+      - v*
+
+# permissions:
+#   contents: read
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: windows-2019
+
+    steps:
+      - uses: actions/checkout@v3
+      - name: Set up Python
+        uses: actions/setup-python@v3
+        with:
+          # python-version: "3.8"
+          # python-version: "3.9"
+          python-version: "3.10"
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+      - name: PyInstaller
+        run: |
+          python build.py
+
+      # - name: Upload artifact
+      #   uses: actions/upload-artifact@v4
+      #   with:
+      #     path: dist
+
+      # - run: tar -cvzf file-copier.zip ./dist/file-copier.exe
+
+      - name: Release
+        uses: technote-space/action-gh-release@v2
+        if: startsWith(github.ref, 'refs/tags/')
+        with:
+          # files: file-copier.zip
+          files: ./dist/file-copier.exe
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      # - name: Release
+      #   env:
+      #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      #     tag: ${{ github.ref }}
+      #     files: ./dist/file-copier.exe
+      #   run: gh release upload "$tag" "$files"

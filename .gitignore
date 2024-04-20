@@ -1,0 +1,10 @@
+__pycache__
+.venv
+.nicegui
+Test-SOURCE.zip
+Test-DESTINATION
+Test-SOURCE
+*.bat
+test.py
+build.json
+output
